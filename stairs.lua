@@ -6,15 +6,18 @@
 -- Example 1: stairs up 50           --
 -- Example 2: stairs down 10         --
 
--- Constants Variables ----------------
+-- Constants --------------------------
 local stepDepth = 4
+
 -- General Purpose Functions ----------
 
 -- Takes fuel from slot 1 if at 0 fuel.
 local function fuelIfNeeded()
-  turtle.select(1)
-  if not turtle.refuel(1) then
-    error("Slot 1 out of fuel!")
+  if turtle.getFuelLevel() == 0 then
+    turtle.select(1)
+    if not turtle.refuel(1) then
+      error("No fuel in slot 1!")
+    end
   end
 end
 
@@ -124,7 +127,7 @@ args[1] = string.lower(args[1])
 -- Say what we are going to do.
 local userH = tonumber(args[2])
 print(string.format(
-  "digging stairs %s %d blocks.",
+  "Digging stairs %s %d blocks.",
   args[1], userH
 ))
 
@@ -139,8 +142,13 @@ end
 
 -- Return to solid ground....
 -- Just in case we are up in the sky :)
-while not turtle.detectDown() do
+local fall = 0
+while fall < 100 do
+  if not turtle.detectDown() then
+    break
+  end
   turtle.down()
+  fall = fall + 1
 end
 
 print("Job complete!")
