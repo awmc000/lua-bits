@@ -6,12 +6,14 @@
 -- Example 1: stairs up 50           --
 -- Example 2: stairs down 10         --
 
+-- Constants Variables ----------------
+local stepDepth = 4
 -- General Purpose Functions ----------
 
 -- Takes fuel from slot 1 if at 0 fuel.
 local function fuelIfNeeded()
   turtle.select(1)
-  if not turtle.refuel() then
+  if not turtle.refuel(1) then
     error("Slot 1 out of fuel!")
   end
 end
@@ -22,11 +24,6 @@ local function digFwd()
   while turtle.detect() do
     assert(turtle.dig())
   end
-end
-
--- Returns true if we are in the air.
-local function inAir()
-  return turtle.dete
 end
 
 ---------------------------------------
@@ -47,7 +44,7 @@ local function digUpGoUp(h)
   end
 end
 
--- moves down to desired height
+-- moves down h blocks
 local function goDown(h)
   for k=1, h do
     assert(turtle.down())
@@ -66,8 +63,8 @@ local function digStairsUp(depth)
     fuelIfNeeded()
     digFwd()
     assert(turtle.forward())
-    digUpGoUp(3)
-    goDown(2)
+    digUpGoUp(stepDepth)
+    goDown(stepDepth - 1)
     i = i + 1
   end
 end
@@ -76,6 +73,7 @@ end
 -- Down-Specific Functions ------------
 ---------------------------------------
 
+-- see digUpGoUp, this is the reverse
 local function digDownGoDown(h)
   for j=1, h do
     while turtle.detectDown() do
@@ -85,6 +83,7 @@ local function digDownGoDown(h)
   end
 end
 
+-- moves up h blocks
 local function goUp(h)
   for k=1, h do
     assert(turtle.up())
@@ -97,8 +96,8 @@ local function digStairsDown(depth)
     fuelIfNeeded()
     digFwd()
     assert(turtle.forward())
-    digDownGoDown(3)
-    goUp(2)
+    digDownGoDown(stepDepth)
+    goUp(stepDepth - 1)
     i = i + 1
   end
 end
@@ -106,7 +105,6 @@ end
 ---------------------------------------
 -- Point of Entry / Exec --------------
 ---------------------------------------
--- Grab arguments
 local args = {...}
 
 local badArgs =
@@ -115,19 +113,34 @@ local badArgs =
   or not tonumber(args[2])
 
 if badArgs then
-  error("Usage: stairs {up|down} {depth}")
+  error(
+    "Usage: stairs {up|down} {depth}"
+  )
 end
 
+-- Make direction lowercase.
+args[1] = string.lower(args[1])
+
+-- Say what we are going to do.
 local userH = tonumber(args[2])
-print("Digging stairs up: ")
-print(userH)
+print(string.format(
+  "digging stairs %s %d blocks.",
+  args[1], userH
+))
 
 -- Branch for up/down
 if args[1] == "up" then
   digStairsUp(userH)
-end
-if args[1] == "down" then
+elseif args[1] == "down" then
   digStairsDown(userH)
+else
+  error("{up|down} only, exiting.")
 end
 
-print("Stairs complete!")
+-- Return to solid ground....
+-- Just in case we are up in the sky :)
+while not turtle.detectDown() do
+  turtle.down()
+end
+
+print("Job complete!")
