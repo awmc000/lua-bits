@@ -76,7 +76,7 @@ end
 -- Down-Specific Functions ------------
 ---------------------------------------
 
--- see digUpGoUp, this is the reverse
+-- See digUpGoUp, this is the reverse
 local function digDownGoDown(h)
   for j=1, h do
     while turtle.detectDown() do
@@ -86,13 +86,14 @@ local function digDownGoDown(h)
   end
 end
 
--- moves up h blocks
+-- Moves up h blocks
 local function goUp(h)
   for k=1, h do
     assert(turtle.up())
   end
 end
 
+-- See digStairsUp, this is the reverse
 local function digStairsDown(depth)
   local i = 0
   while i < depth do
