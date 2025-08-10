@@ -1,10 +1,11 @@
 -- ====================================
 -- ==             stairs             ==
 -- ====================================
---  Script to dig stairs up or down. --
+-- ComputerCraft Tweaked script.     --
+-- Script to dig stairs up or down.  --
 -- Usage    : stairs {dir} {depth}   --
--- Example 1: stairs up 50           --
--- Example 2: stairs down 10         --
+-- Example 1: $ stairs up 50         --
+-- Example 2: $ stairs down 10       --
 
 -- Constants --------------------------
 local stepDepth = 4
