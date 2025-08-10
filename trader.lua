@@ -12,8 +12,10 @@
 -- * Fully local, no network use.    --
 -- * Usage: $ trader                 --
 
--- Constants
-local balanceFile = "traderBalance.txt"
+-- Constants and Globals
+local BALANCE_FILE = "traderBalance.txt"
+
+local commandBlock = nil
 
 -- X = 50 => 50 ems for one X.
 -- Y = -50 => 50 Y for one em.
@@ -118,7 +120,69 @@ local function printPriceTable()
   end
 end
 
+local function setUpCommandBlock()
+  local peripheralCbs = peripheral.find("command")
+
+  -- Handle no command block.
+  if peripheralCbs.length == 0 then 
+    error("Trade requires a command block.")
+  end
+  -- Handle multiple command blocks.
+  if peripheralCbs.length > 1 then
+    error("Only 1 command block at term allowed.")
+  end
+
+  if peripheralCbs.length == 1 then
+    commandBlock = peripheral.wrap("top")
+    commandBlock.setCommand(
+      '/tellraw @a {"text":"trader: CB Online","color":"green"}'
+    )
+    commandBlock.runCommand()
+  end
+end
+
+-- Returns true if the command block peripheral is
+-- set up.
+local function commandBlockOnline()
+  -- check for nil CB
+  if commandBlock == nil then return false end
+
+  -- check for invalid CB
+  if type(commandBlock[getCommand]) != "function" then
+    return false
+  end
+
+  -- checks passed 
+  return true
+end
+
+local function take(item, qty)
+  print(string.format("TODO: take %d of %s from player", qty, item))
+
+  -- Check if command block is online.
+  if not commandBlockOnline() then
+    error("Command block must be online.")
+  end
+
+  -- Set command to "clear" with appropriate player, item, and qty.
+  -- Execute command.
+end
+
+local function give(item, qty)
+  print(string.format("TODO: give %d of %s to player", qty, item))
+
+  -- Check if command block is online.
+  if not commandBlockOnline() then
+    error("Command block must be online.")
+  end
+
+  -- Set command to "give" with appropriate player, item, and qty.
+  -- Execute command.
+end
+
 -------------------------------------------------
 -- Point of Entry -------------------------------
 -------------------------------------------------
+local username = ...
+print("Trading for player: " .. username)
 printPriceTable()
