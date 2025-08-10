@@ -147,9 +147,9 @@ local function commandBlockOnline()
   if commandBlock == nil then return false end
 
   -- check for invalid CB
-  if type(commandBlock[getCommand]) ~= "function" then
-    return false
-  end
+  -- if type(commandBlock[runCommand]) ~= "function" then
+  --   return false
+  -- end
 
   -- checks passed 
   return true
@@ -164,7 +164,14 @@ local function take(item, qty)
   end
 
   -- Set command to "clear" with appropriate player, item, and qty.
+  local cmd = string.format(
+    "/clear %s %s %d",
+    username, item, qty
+  )
+  commandBlock.setCommand(cmd)
+
   -- Execute command.
+  commandBlock.runCommand()
 end
 
 local function give(item, qty)
@@ -176,7 +183,14 @@ local function give(item, qty)
   end
 
   -- Set command to "give" with appropriate player, item, and qty.
+  local cmd = string.format(
+    "/give %s %s %d",
+    username, item, qty
+  )
+  commandBlock.setCommand(cmd)
+
   -- Execute command.
+  commandBlock.runCommand()
 end
 
 -------------------------------------------------
@@ -185,6 +199,9 @@ end
 local username = ...
 print("Trading for player: " .. username)
 setUpCommandBlock()
+
+-- As a test, give player a gift:)
+give("wheat", 1)
 
 -- Main loop: Draw, parse command, execute command, repeat.
 local command = "starting"
@@ -198,3 +215,4 @@ while command ~= "exit" do
     print("Exiting trade terminal!")
   end
 end
+
