@@ -112,11 +112,17 @@ end
 local function printPriceTable()
   for key, commodity in pairs(commodities) do
     local price = getPrice(commodity)
-    print(string.format(
-      "%-12s | Min: %4d | Max: %4d | Today: %4d",
-      commodity.name, commodity.min, 
-      commodity.max, price
-    ))
+    local priceStr = nil
+    if price < 0 then
+      priceStr = string.format("%d\t\t%s\t\t1e.",
+        math.abs(price), commodity.name
+      )
+    elseif price > 0 then
+      priceStr = string.format("1\t\t%s\t\t%de.",
+        commodity.name, math.abs(price)
+      )
+    end
+    print(priceStr)
   end
 end
 
@@ -127,18 +133,11 @@ local function setUpCommandBlock()
   if peripheralCbs == nil or peripheralCbs.length == 0 then 
     error("Trade requires a command block.")
   end
-  -- Handle multiple command blocks.
-  if peripheralCbs.length > 1 then
-    error("Only 1 command block at term allowed.")
-  end
-
-  if peripheralCbs.length == 1 then
-    commandBlock = peripheral.wrap("top")
-    commandBlock.setCommand(
-      '/tellraw @a {"text":"trader: CB Online","color":"green"}'
-    )
-    commandBlock.runCommand()
-  end
+  commandBlock = peripheral.wrap("top")
+  commandBlock.setCommand(
+    '/tellraw @a {"text":"trader: CB Online","color":"green"}'
+  )
+  commandBlock.runCommand()
 end
 
 -- Returns true if the command block peripheral is
@@ -148,7 +147,7 @@ local function commandBlockOnline()
   if commandBlock == nil then return false end
 
   -- check for invalid CB
-  if type(commandBlock[getCommand]) != "function" then
+  if type(commandBlock[getCommand]) ~= "function" then
     return false
   end
 
@@ -186,4 +185,16 @@ end
 local username = ...
 print("Trading for player: " .. username)
 setUpCommandBlock()
-printPriceTable()
+
+-- Main loop: Draw, parse command, execute command, repeat.
+local command = "starting"
+while command ~= "exit" do
+  term.clear()
+  printPriceTable()
+  write("(buy/sell/exit) > ")
+  command = read()
+  if command == "exit" then 
+    term.setTextColour(colours.blue)
+    print("Exiting trade terminal!")
+  end
+end
