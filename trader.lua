@@ -124,7 +124,7 @@ local function setUpCommandBlock()
   local peripheralCbs = peripheral.find("command")
 
   -- Handle no command block.
-  if peripheralCbs.length == 0 then 
+  if peripheralCbs == nil or peripheralCbs.length == 0 then 
     error("Trade requires a command block.")
   end
   -- Handle multiple command blocks.
@@ -185,4 +185,5 @@ end
 -------------------------------------------------
 local username = ...
 print("Trading for player: " .. username)
+setUpCommandBlock()
 printPriceTable()
